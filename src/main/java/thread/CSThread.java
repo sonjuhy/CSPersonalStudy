@@ -1,15 +1,30 @@
 package thread;
 
 public class CSThread {
+    static String str = "hello?";
     public void start(){
         CustomThread thread1 = new CustomThread("thread1");
         CustomThread thread2 = new CustomThread("thread2");
         thread1.start();
         thread2.start();
+        changeStr();
+    }
+    private void changeStr(){
+        Thread thread = new Thread(
+                () ->{
+                    try{
+                        Thread.sleep(2000);
+                        str = "hi?";
+                    }
+                    catch (Exception e){
+
+                    }
+                }
+        );
+        thread.start();
     }
 
     public void case1(){
-        System.out.println("Start!");
         Thread thread1 = new Thread(
                 () -> calc(1)
         );
@@ -22,7 +37,7 @@ public class CSThread {
     public static void calc(int id){
         int a = 10;
         a += 5;
-        System.out.println(id+", "+a);
+        System.out.println(id+", "+a+", str : "+ str);
     }
     public static void calc2(int id){
         int b = 10;
@@ -38,10 +53,10 @@ public class CSThread {
 
         @Override
         public void run(){
-            for(int i=0;i<5;i++) {
+            for(int i=0;i<3;i++) {
                 try {
                     Thread.sleep(1000);
-//                    System.out.println(this.name+" : static string : " + Main.str);
+                    System.out.println(this.name+" : static string : " + str);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
