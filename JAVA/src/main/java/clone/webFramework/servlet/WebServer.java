@@ -1,4 +1,4 @@
-package clone.webFramework;
+package clone.webFramework.servlet;
 
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
