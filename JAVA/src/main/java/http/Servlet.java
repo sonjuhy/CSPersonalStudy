@@ -4,16 +4,13 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import jdk.jfr.Name;
 
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public class Servlet {
     private static int threadLimit = 0;
@@ -151,6 +148,16 @@ public class Servlet {
             System.out.println("runningThread : " + runningThread);
             System.out.println("threadLimit : " + threadLimit);
             System.out.println("getMethod : " + exchange.getRequestMethod());
+            System.out.println("Response Header size : " + exchange.getResponseHeaders().size());
+            System.out.println("Request Header size : " + exchange.getRequestHeaders().size());
+            exchange.getRequestHeaders().forEach((key, value)->{
+                System.out.println("key : " + key);
+                for(String str : value){
+                    System.out.println("value : " + str);
+                }
+                System.out.println();
+            });
+
 
             while(runningThread >= threadLimit) {
                 try {
