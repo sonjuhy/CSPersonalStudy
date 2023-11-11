@@ -101,41 +101,41 @@ public class EnumExampleClass {
         }
     }
     public void nonEnumExample3(){
-        if(DayClass.MONDAY == MonthClass.JANUARY){ // 이젠 이렇게 비교 하면, 컴파일러에서 오류 체크 가능해짐
-            System.out.println("두 상수는 같습니다.");
-        }
+//        if(DayClass.MONDAY == MonthClass.JANUARY){ // 이젠 이렇게 비교 하면, 컴파일러에서 오류 체크 가능해짐
+//            System.out.println("두 상수는 같습니다.");
+//        }
 
         DayClass day = DayClass.MONDAY;
-        switch(day){ // 위에서 에러는 걸러졌지만, 실행을 할 수 없음. 상수로 사용하려 했으나 제한이 생김.
-            case DAY.MONDAY:
-                System.out.println("월요일 입니다.");
-                break;
-            case DAY.TUESDAY:
-                System.out.println("화요일 입니다.");
-                break;
-            case DAY.WEDNESDAY:
-                System.out.println("수요일 입니다.");
-                break;
-            case DAY.THURSDAY:
-                System.out.println("목요일 입니다.");
-                break;
-            case DAY.FRIDAY:
-                System.out.println("금요일 입니다.");
-                break;
-            case DAY.SATURDAY:
-                System.out.println("토요일 입니다.");
-                break;
-            case DAY.SUNDAY:
-                System.out.println("일요일 입니다.");
-                break;
-        }
+//        switch(day){ // 위에서 에러는 걸러졌지만, 실행을 할 수 없음. 상수로 사용하려 했으나 제한이 생김.
+//            case DAY.MONDAY:
+//                System.out.println("월요일 입니다.");
+//                break;
+//            case DAY.TUESDAY:
+//                System.out.println("화요일 입니다.");
+//                break;
+//            case DAY.WEDNESDAY:
+//                System.out.println("수요일 입니다.");
+//                break;
+//            case DAY.THURSDAY:
+//                System.out.println("목요일 입니다.");
+//                break;
+//            case DAY.FRIDAY:
+//                System.out.println("금요일 입니다.");
+//                break;
+//            case DAY.SATURDAY:
+//                System.out.println("토요일 입니다.");
+//                break;
+//            case DAY.SUNDAY:
+//                System.out.println("일요일 입니다.");
+//                break;
+//        }
     }
 
     public void withEnumExample(){
         Day day = Day.MONDAY; // EnumExample.java 파일안에 존재하는 Day, Month enum 코드에서 가져옴
-        if(Day.MONDAY == Month.JANUARY){ // 마찬가지로 두 값은 비교가 안되므로 후에 에러가 날 일이 없음.
-            System.out.println("두 값이 같습니다.");
-        }
+//        if(Day.MONDAY == Month.JANUARY){ // 마찬가지로 두 값은 비교가 안되므로 후에 에러가 날 일이 없음.
+//            System.out.println("두 값이 같습니다.");
+//        }
         switch(day){ // 가독성 향상됨. 원하는 타입으로 잘 실행이 됨.
             case MONDAY:
                 System.out.println("월요일 입니다.");
