@@ -49,7 +49,7 @@ public class FileSearchServiceImpl implements FileSearchService {
             for(int i=0;i<list.size();i++){
                 Path path = list.get(i);
                 File tmpFile = new File(path.toString());
-                String pathStr = UUID.nameUUIDFromBytes(file.getPath().getBytes(StandardCharsets.UTF_8)).toString();
+                String pathStr = UUID.nameUUIDFromBytes(tmpFile.getPath().getBytes(StandardCharsets.UTF_8)).toString();
                 int size = (int) (file.length()/1024);
                 bw.write((i+1)+" "+pathStr+" "+size+"\n");
             }
