@@ -30,7 +30,7 @@ public class LargeDataToServiceImpl implements LargeDataToDBService{
     @Override
     public void load() {
         try{
-            BufferedReader br = new BufferedReader(new FileReader("E:\\WorkSpace\\Intelij-workspace\\CSPersonalStudy\\SpringBoot3\\FileList.txt"));
+            BufferedReader br = new BufferedReader(new FileReader("D:\\WorkSpace\\FileList.txt"));
             StringTokenizer st;
             String str;
             while((str = br.readLine()) != null){
@@ -40,6 +40,7 @@ public class LargeDataToServiceImpl implements LargeDataToDBService{
                 int size = Integer.parseInt(st.nextToken());
                 list.add(new FileDto(id, name, size));
             }
+            System.out.println("Load end, list size : "+list.size());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -87,6 +88,7 @@ public class LargeDataToServiceImpl implements LargeDataToDBService{
         System.out.println("saveWithJPA working total time : "+((filesWalkEndTime-filesWalkStartTime)/60000)+"m "+((filesWalkEndTime-filesWalkStartTime)%60000)+"s");
     }
     private void saveWithNativeQuery(){
+        System.out.println("saveWithNativeQuery start. list size : "+list.size());
         long filesWalkStartTime = System.currentTimeMillis();
         for(FileDto fileDto : list){
             repository.insertIfNotExist(fileDto.getName(), fileDto.getSize());
