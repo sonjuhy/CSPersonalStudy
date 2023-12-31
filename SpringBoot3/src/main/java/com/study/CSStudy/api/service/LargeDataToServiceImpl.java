@@ -1,6 +1,7 @@
 package com.study.CSStudy.api.service;
 
 import com.study.CSStudy.api.dto.FileDto;
+import com.study.CSStudy.db.repository.LargeDataCustomRepository;
 import com.study.CSStudy.db.repository.MySQLRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -20,17 +21,19 @@ public class LargeDataToServiceImpl implements LargeDataToDBService{
     private static List<FileDto> list = new ArrayList<>();
     @Autowired
     MySQLRepository repository;
+    @Autowired
+    LargeDataCustomRepository customRepository;
 
     @Override
     public void run(int mode) {
-        load();
+        if(list.isEmpty())load();
         save(mode);
     }
 
     @Override
     public void load() {
         try{
-            BufferedReader br = new BufferedReader(new FileReader("D:\\WorkSpace\\FileList.txt"));
+            BufferedReader br = new BufferedReader(new FileReader("E:\\WorkSpace\\FileList.txt"));
             StringTokenizer st;
             String str;
             while((str = br.readLine()) != null){
@@ -63,7 +66,10 @@ public class LargeDataToServiceImpl implements LargeDataToDBService{
                     saveWithAsync(list.subList(i, end));
                 }
                 break;
-            case 3: // total seq
+            case 3:
+                saveWithBatchUpdate();
+                break;
+            case 4: // total seq
                 deleteAll();
                 saveWithJPA();
                 deleteAll();
@@ -96,7 +102,13 @@ public class LargeDataToServiceImpl implements LargeDataToDBService{
         long filesWalkEndTime= System.currentTimeMillis();
         System.out.println("saveWithNativeQuery working total time : "+((filesWalkEndTime-filesWalkStartTime)/60000)+"m "+((filesWalkEndTime-filesWalkStartTime)%60000)+"s");
     }
-
+    private void saveWithBatchUpdate(){
+        System.out.println("saveWithBatchUpdate start. list size : "+list.size());
+        long filesWalkStartTime = System.currentTimeMillis();
+        customRepository.saveAll(list);
+        long filesWalkEndTime= System.currentTimeMillis();
+        System.out.println("saveWithBatchUpdate working total time : "+((filesWalkEndTime-filesWalkStartTime)/60000)+"m "+((filesWalkEndTime-filesWalkStartTime)%60000)+"s");
+    }
     @Async
     void saveWithAsync(List<FileDto> dataList){
         for(FileDto fileDto : dataList){
