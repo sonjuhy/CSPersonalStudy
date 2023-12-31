@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LargeDataCustomRepository {
     private final JdbcTemplate jdbcTemplate;
-    private final int batchSize = 10000000;
+    private final int batchSize = 10000;
 
     public void saveAll(List<FileDto> list){
         int batchCount = 1;
@@ -30,7 +30,6 @@ public class LargeDataCustomRepository {
             subList = new ArrayList<>(list.subList(i, end));
             batchInsert(subList);
         }
-        System.out.println("saveAll end");
     }
     private void batchInsert(List<FileDto> list){
         jdbcTemplate.batchUpdate("INSERT INTO file(name, file_size) VALUE(?, ?) AS new_file ON duplicate key UPDATE name=new_file.name, file_size=new_file.file_size", new BatchPreparedStatementSetter() {

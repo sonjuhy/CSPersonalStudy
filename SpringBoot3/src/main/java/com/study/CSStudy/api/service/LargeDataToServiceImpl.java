@@ -13,16 +13,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Service
 public class LargeDataToServiceImpl implements LargeDataToDBService{
 
-    private static List<FileDto> list = new ArrayList<>();
+    private static final List<FileDto> list = new ArrayList<>();
+    static int finishedCount = 0;
     @Autowired
     MySQLRepository repository;
     @Autowired
     LargeDataCustomRepository customRepository;
+    @Autowired
+    AsyncServiceImpl asyncService;
 
     @Override
     public void run(int mode) {
@@ -69,7 +75,39 @@ public class LargeDataToServiceImpl implements LargeDataToDBService{
             case 3:
                 saveWithBatchUpdate();
                 break;
-            case 4: // total seq
+            case 4:
+                System.out.println("saveWithBatchUpdateAsync start.");
+                long filesWalkStartTime = System.currentTimeMillis();
+                List<FileDto> subList;
+                int listCount = 1;
+
+                for(int i=0;i<list.size();i=listCount*10000){
+                    int end;
+                    listCount++;
+                    if(listCount*10000 >= list.size()) end = list.size()-1;
+                    else end = listCount*10000;
+
+                    subList = new ArrayList<>(list.subList(i, end));
+                    try {
+                        CompletableFuture<Integer> future = asyncService.saveWithBatchUpdateAsync(listCount - 1, subList);
+                        future.thenAccept(count -> {
+                                finishedCount++;
+                                if(finishedCount >= 320){
+                                    long filesWalkEndTime= System.currentTimeMillis();
+                                    System.out.println("saveWithBatchUpdateAsync working total time : "
+                                            +((filesWalkEndTime-filesWalkStartTime)/60000)+"m "
+                                            +((filesWalkEndTime-filesWalkStartTime)/1000%60)+"s"
+                                    );
+                                }
+                        });
+                    }
+                    catch (Exception e){
+
+                    }
+                }
+
+                break;
+            case 5: // total seq
                 deleteAll();
                 saveWithJPA();
                 deleteAll();
@@ -91,7 +129,7 @@ public class LargeDataToServiceImpl implements LargeDataToDBService{
             repository.insertFileIfNotExists(fileDto.getName(), fileDto.getSize());
         }
         long filesWalkEndTime= System.currentTimeMillis();
-        System.out.println("saveWithJPA working total time : "+((filesWalkEndTime-filesWalkStartTime)/60000)+"m "+((filesWalkEndTime-filesWalkStartTime)%60000)+"s");
+        System.out.println("saveWithJPA working total time : "+((filesWalkEndTime-filesWalkStartTime)/60000)+"m "+((filesWalkEndTime-filesWalkStartTime)/1000%60)+"s");
     }
     private void saveWithNativeQuery(){
         System.out.println("saveWithNativeQuery start. list size : "+list.size());
@@ -100,19 +138,22 @@ public class LargeDataToServiceImpl implements LargeDataToDBService{
             repository.insertIfNotExist(fileDto.getName(), fileDto.getSize());
         }
         long filesWalkEndTime= System.currentTimeMillis();
-        System.out.println("saveWithNativeQuery working total time : "+((filesWalkEndTime-filesWalkStartTime)/60000)+"m "+((filesWalkEndTime-filesWalkStartTime)%60000)+"s");
+        System.out.println("saveWithNativeQuery working total time : "+((filesWalkEndTime-filesWalkStartTime)/60000)+"m "+((filesWalkEndTime-filesWalkStartTime)/1000%60)+"s");
     }
     private void saveWithBatchUpdate(){
-        System.out.println("saveWithBatchUpdate start. list size : "+list.size());
+        System.out.println("saveWithBatchUpdate start.");
         long filesWalkStartTime = System.currentTimeMillis();
         customRepository.saveAll(list);
         long filesWalkEndTime= System.currentTimeMillis();
-        System.out.println("saveWithBatchUpdate working total time : "+((filesWalkEndTime-filesWalkStartTime)/60000)+"m "+((filesWalkEndTime-filesWalkStartTime)%60000)+"s");
+        System.out.println("saveWithBatchUpdate working total time : "+((filesWalkEndTime-filesWalkStartTime)/60000)+"m "+((filesWalkEndTime-filesWalkStartTime)/1000%60)+"s");
     }
+
+
     @Async
     void saveWithAsync(List<FileDto> dataList){
         for(FileDto fileDto : dataList){
             repository.insertIfNotExist(fileDto.getName(), fileDto.getSize());
         }
     }
+
 }
