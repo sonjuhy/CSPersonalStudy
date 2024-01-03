@@ -81,18 +81,18 @@ public class LargeDataToServiceImpl implements LargeDataToDBService{
                 List<FileDto> subList;
                 int listCount = 1;
 
-                for(int i=0;i<list.size();i=listCount*10000){
+                for(int i=0;i<list.size();i=listCount*500000){
                     int end;
                     listCount++;
-                    if(listCount*10000 >= list.size()) end = list.size()-1;
-                    else end = listCount*10000;
+                    if(listCount*500000 >= list.size()) end = list.size()-1;
+                    else end = listCount*500000;
 
                     subList = new ArrayList<>(list.subList(i, end));
                     try {
                         CompletableFuture<Integer> future = asyncService.saveWithBatchUpdateAsync(listCount - 1, subList);
                         future.thenAccept(count -> {
                                 finishedCount++;
-                                if(finishedCount >= 320){
+                                if(finishedCount >= 7){
                                     long filesWalkEndTime= System.currentTimeMillis();
                                     System.out.println("saveWithBatchUpdateAsync working total time : "
                                             +((filesWalkEndTime-filesWalkStartTime)/60000)+"m "
@@ -143,7 +143,7 @@ public class LargeDataToServiceImpl implements LargeDataToDBService{
     private void saveWithBatchUpdate(){
         System.out.println("saveWithBatchUpdate start.");
         long filesWalkStartTime = System.currentTimeMillis();
-        customRepository.saveAll(list);
+        customRepository.saveAll(list.subList(0,140000));
         long filesWalkEndTime= System.currentTimeMillis();
         System.out.println("saveWithBatchUpdate working total time : "+((filesWalkEndTime-filesWalkStartTime)/60000)+"m "+((filesWalkEndTime-filesWalkStartTime)/1000%60)+"s");
     }
