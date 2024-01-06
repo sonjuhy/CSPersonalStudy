@@ -7,13 +7,13 @@ import lombok.ToString;
 
 @Getter
 @Entity
-@Table(name = "file_sub")
+@Table(name = "file")
 @ToString
 @NoArgsConstructor
 public class FileEntity {
 
     @Column(name = "id")
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Id

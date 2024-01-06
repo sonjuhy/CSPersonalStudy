@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,7 +33,14 @@ public class FileSearchServiceImpl implements FileSearchService {
             Stream<Path> walk = Files.walk(dirPath);
             listPath = walk.collect(Collectors.toList());
             System.out.println("walk end, list size : "+listPath.size());
-            tmpWrite(listPath);
+            List<FileEntity> entityList = new ArrayList<>();
+            for(Path path : listPath){
+                File file = new File(path.toString());
+                FileEntity entity = new FileEntity(file.getName(), (int) file.length());
+                entityList.add(entity);
+            }
+            repository.saveAll(entityList);
+//            tmpWrite(listPath);
         }
         catch(IOException e){
             System.out.println(e.getMessage());
@@ -61,26 +69,27 @@ public class FileSearchServiceImpl implements FileSearchService {
 
     @Override
     public void filesWalkWithDB() {
-        long filesWalkStartTime = System.currentTimeMillis();
+
         Path dirPath = Paths.get(defaultPath);
         List<Path> listPath;
         try{
             Stream<Path> walk = Files.walk(dirPath);
             listPath = walk.collect(Collectors.toList());
             long filesWalkEndTime= System.currentTimeMillis();
-            System.out.println("walk end, list size : "+listPath.size()+", time(s) : "+(filesWalkEndTime-filesWalkStartTime)/1000);
+//            System.out.println("walk end, list size : "+listPath.size()+", time(s) : "+(filesWalkEndTime-filesWalkStartTime)/1000);
+            long filesWalkStartTime = System.currentTimeMillis();
             for(Path path : listPath){
                 File file = new File(path.toString());
                 String pathStr = UUID.nameUUIDFromBytes(file.getPath().getBytes(StandardCharsets.UTF_8)).toString();
                 int size = (int) (file.length()/1024);
                 repository.insertFileIfNotExists(pathStr, size);
             }
+            long filesWalkTotalEndTime = System.currentTimeMillis();
+            System.out.println("filesWalk working total time : "+((filesWalkTotalEndTime-filesWalkStartTime)/60000)+"m "+((filesWalkTotalEndTime-filesWalkStartTime)%60000)+"s");
         }
         catch(IOException e){
             System.out.println(e.getMessage());
         }
-        long filesWalkTotalEndTime = System.currentTimeMillis();
-        System.out.println("filesWalk working total time : "+((filesWalkTotalEndTime-filesWalkStartTime)/60000)+"m "+((filesWalkTotalEndTime-filesWalkStartTime)%60000)+"s");
     }
 
     @Override

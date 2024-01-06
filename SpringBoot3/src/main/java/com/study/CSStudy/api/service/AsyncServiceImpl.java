@@ -1,6 +1,7 @@
 package com.study.CSStudy.api.service;
 
 import com.study.CSStudy.api.dto.FileDto;
+import com.study.CSStudy.db.entity.FileEntity;
 import com.study.CSStudy.db.repository.LargeDataCustomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -17,7 +18,7 @@ public class AsyncServiceImpl {
     @Autowired
     LargeDataCustomRepository customRepository;
     @Async("threadPoolTaskExecutor")
-    public CompletableFuture<Integer> saveWithBatchUpdateAsync(int id, List<FileDto> fileList){
+    public CompletableFuture<Integer> saveWithBatchUpdateAsync(int id, List<FileEntity> fileList){
 //        for(int i=0;i<5;i++){
 //            try {
 //                System.out.println(id+" async task start");

@@ -1,6 +1,7 @@
 package com.study.CSStudy.api.service;
 
 import com.study.CSStudy.api.dto.FileDto;
+import com.study.CSStudy.db.entity.FileEntity;
 import com.study.CSStudy.db.repository.LargeDataCustomRepository;
 import com.study.CSStudy.db.repository.MySQLRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 @Service
 public class LargeDataToServiceImpl implements LargeDataToDBService{
 
-    private static final List<FileDto> list = new ArrayList<>();
+    private static final List<FileEntity> list = new ArrayList<>();
     static int finishedCount = 0;
     @Autowired
     MySQLRepository repository;
@@ -47,7 +48,8 @@ public class LargeDataToServiceImpl implements LargeDataToDBService{
                 int id = Integer.parseInt(st.nextToken());
                 String name = st.nextToken();
                 int size = Integer.parseInt(st.nextToken());
-                list.add(new FileDto(id, name, size));
+//                list.add(new FileDto(id, name, size));
+                list.add(new FileEntity(name, size));
             }
             System.out.println("Load end, list size : "+list.size());
         } catch (IOException e) {
@@ -78,7 +80,7 @@ public class LargeDataToServiceImpl implements LargeDataToDBService{
             case 4:
                 System.out.println("saveWithBatchUpdateAsync start.");
                 long filesWalkStartTime = System.currentTimeMillis();
-                List<FileDto> subList;
+                List<FileEntity> subList;
                 int listCount = 1;
 
                 for(int i=0;i<list.size();i=listCount*500000){
@@ -125,17 +127,18 @@ public class LargeDataToServiceImpl implements LargeDataToDBService{
     private void saveWithJPA(){
         System.out.println("saveWithJPA Start");
         long filesWalkStartTime = System.currentTimeMillis();
-        for(FileDto fileDto : list){
-            repository.insertFileIfNotExists(fileDto.getName(), fileDto.getSize());
-        }
+//        for(FileDto fileDto : list){
+//            repository.insertFileIfNotExists(fileDto.getName(), fileDto.getSize());
+//        }
+        repository.saveAll(list.subList(0,5000));
         long filesWalkEndTime= System.currentTimeMillis();
         System.out.println("saveWithJPA working total time : "+((filesWalkEndTime-filesWalkStartTime)/60000)+"m "+((filesWalkEndTime-filesWalkStartTime)/1000%60)+"s");
     }
     private void saveWithNativeQuery(){
         System.out.println("saveWithNativeQuery start. list size : "+list.size());
         long filesWalkStartTime = System.currentTimeMillis();
-        for(FileDto fileDto : list){
-            repository.insertIfNotExist(fileDto.getName(), fileDto.getSize());
+        for(FileEntity fileEntity : list){
+            repository.insertIfNotExist(fileEntity.getName(), fileEntity.getSize());
         }
         long filesWalkEndTime= System.currentTimeMillis();
         System.out.println("saveWithNativeQuery working total time : "+((filesWalkEndTime-filesWalkStartTime)/60000)+"m "+((filesWalkEndTime-filesWalkStartTime)/1000%60)+"s");
@@ -143,16 +146,16 @@ public class LargeDataToServiceImpl implements LargeDataToDBService{
     private void saveWithBatchUpdate(){
         System.out.println("saveWithBatchUpdate start.");
         long filesWalkStartTime = System.currentTimeMillis();
-        customRepository.saveAll(list.subList(0,140000));
+        customRepository.saveAll(list);
         long filesWalkEndTime= System.currentTimeMillis();
         System.out.println("saveWithBatchUpdate working total time : "+((filesWalkEndTime-filesWalkStartTime)/60000)+"m "+((filesWalkEndTime-filesWalkStartTime)/1000%60)+"s");
     }
 
 
     @Async
-    void saveWithAsync(List<FileDto> dataList){
-        for(FileDto fileDto : dataList){
-            repository.insertIfNotExist(fileDto.getName(), fileDto.getSize());
+    void saveWithAsync(List<FileEntity> dataList){
+        for(FileEntity fileEntity : dataList){
+            repository.insertIfNotExist(fileEntity.getName(), fileEntity.getSize());
         }
     }
 
