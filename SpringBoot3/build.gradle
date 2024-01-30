@@ -38,6 +38,11 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.fasterxml.uuid/java-uuid-generator
 	implementation 'com.fasterxml.uuid:java-uuid-generator:4.3.0'
 
+	// Spring Batch
+	implementation 'org.springframework.boot:spring-boot-starter-batch'
+// https://mvnrepository.com/artifact/org.springframework.batch/spring-batch-core
+	implementation 'org.springframework.batch:spring-batch-core:5.1.0'
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
