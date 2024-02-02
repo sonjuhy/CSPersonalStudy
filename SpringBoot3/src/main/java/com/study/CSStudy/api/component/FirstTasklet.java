@@ -15,7 +15,6 @@ public class FirstTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         log.info("First Tasklet : first Step");
-        log.info("First Tasklet contribution : {}, chunk : {}", contribution, chunkContext);
         return RepeatStatus.FINISHED;
     }
 }
