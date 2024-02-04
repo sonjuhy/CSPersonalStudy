@@ -22,7 +22,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 @Slf4j
 @RequiredArgsConstructor
-//@Configuration
+@Configuration
 public class SpringBatchParallelConfiguration {
 
 
@@ -110,6 +110,12 @@ public class SpringBatchParallelConfiguration {
     @Bean
     public ItemWriter<Integer> customWriter(){
         return items -> {
+            try {
+                Thread.sleep(3000);
+            }
+            catch (Exception e){
+                System.out.println(e.getMessage());
+            }
             for(int num : items){
                 System.out.println(num);
             }
