@@ -18,6 +18,8 @@ public class BatchController {
     @Autowired
     private Job sampleParallelJob;
     @Autowired
+    private Job simpleJob1;
+    @Autowired
     private JobLauncher jobLauncher;
 
     @GetMapping("/jobRunning")
@@ -28,6 +30,12 @@ public class BatchController {
                     .addString("publicCheck-"+date.getTime(), String.valueOf(System.currentTimeMillis()))
                     .toJobParameters();
             jobLauncher.run(sampleParallelJob, jobParameters);
+
+            JobParameters simpleJobParameters = new JobParametersBuilder()
+                    .addString("simpleCheck-"+date.getTime(), String.valueOf(System.currentTimeMillis()))
+                    .toJobParameters();
+            jobLauncher.run(simpleJob1, simpleJobParameters);
+
         }
         catch(Exception e){
             System.out.println(e.getMessage());
