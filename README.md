@@ -32,4 +32,4 @@ JAVA 실습 위주로 진행 할 예정입니다.
  - annotation을 이용한 rest api 서비스 코드 연동 [2023.09 26]
  - 대용량 데이터(300만건) Insert 하는 여러 방법 [2023.12.31]
  - Annotation 공부 Part 1 [2024.01.16]
-
+ - Spring Batch 공부 [2024.03.02]
