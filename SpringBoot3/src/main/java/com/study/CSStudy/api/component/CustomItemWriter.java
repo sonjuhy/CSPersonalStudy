@@ -1,5 +1,6 @@
 package com.study.CSStudy.api.component;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.Chunk;
@@ -10,22 +11,16 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Component
-public class CustomItemWriter implements ItemWriter<Integer> {
-
-    private StepExecution stepExecution;
+public class CustomItemWriter implements ItemWriter<String> {
 
     @Override
-    public void write(Chunk<? extends Integer> chunk) throws Exception {
-        List<Integer> list = new ArrayList<>();
-        for(int i=13;i<29;i++) list.add(i);
-        ExecutionContext stepContext = this.stepExecution.getExecutionContext();
-        stepContext.put("listData", list);
-        System.out.println("CustomItemWriter list size : "+list.size());
+    public void write(Chunk<? extends String> chunk) throws Exception {
+        List<String> stringList = (List<String>) chunk.getItems();
+        for(String str : stringList){
+            log.info(str);
+        }
     }
 
-    @BeforeStep
-    public void saveStepExecution(StepExecution stepExecution){
-        this.stepExecution = stepExecution;
-    }
 }
