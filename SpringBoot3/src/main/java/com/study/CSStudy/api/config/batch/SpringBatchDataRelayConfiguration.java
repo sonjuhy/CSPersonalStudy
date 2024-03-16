@@ -1,15 +1,17 @@
 package com.study.CSStudy.api.config.batch;
 
-import com.study.CSStudy.api.component.*;
+import com.study.CSStudy.api.component.batchComponent.CustomItemReaderForRelay;
+import com.study.CSStudy.api.component.batchComponent.CustomItemWriterForRelay;
+import com.study.CSStudy.api.component.batchComponent.CustomStep;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
-import org.springframework.batch.item.*;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.support.CompositeItemWriter;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
@@ -25,8 +27,7 @@ import java.util.List;
 public class SpringBatchDataRelayConfiguration {
 
     private final CustomItemReaderForRelay customItemReaderForRelay;
-    private final CustomItemWriterForRelay customItemWriterForRelay;
-    private final CustomStep customStep;
+    private final CustomItemWriterForRelay customItemWriterForRelay,customItemWriterForRelay1,customItemWriterForRelay2;
 
     @Bean
     public Job relayJob(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager){
@@ -40,6 +41,13 @@ public class SpringBatchDataRelayConfiguration {
     }
 
     @Bean
+    public Job relayChunkJob(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager){
+        return new JobBuilder("JobForDataRelayTestWithChunk", jobRepository)
+                .start(relayChunkStep1(jobRepository, platformTransactionManager))
+                .next(relayChunkStep2(jobRepository, platformTransactionManager))
+                .build();
+    }
+
     public Step relayStep1(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager){
         return new StepBuilder("relayStep1", jobRepository)
                 .tasklet(relayTask1(), platformTransactionManager)
@@ -47,7 +55,6 @@ public class SpringBatchDataRelayConfiguration {
                 .build();
     }
 
-    @Bean
     public Step relayStep2(JobRepository jobRepository,PlatformTransactionManager platformTransactionManager){
         return new StepBuilder("relayStep2", jobRepository)
                 .tasklet(relayTask2(), platformTransactionManager)
@@ -55,7 +62,6 @@ public class SpringBatchDataRelayConfiguration {
                 .build();
     }
 
-    @Bean
     public Tasklet relayTask1(){
         return ((contribution, chunkContext) -> {
             List<Integer> list = new ArrayList<>();
@@ -66,7 +72,6 @@ public class SpringBatchDataRelayConfiguration {
         });
     }
 
-    @Bean
     public Tasklet relayTask2(){
         return ((contribution, chunkContext) -> {
             List<Integer> list = (List<Integer>) chunkContext.getStepContext().getStepExecution().getJobExecution().getExecutionContext().get("listData");
@@ -85,25 +90,28 @@ public class SpringBatchDataRelayConfiguration {
         });
     }
 
-    @Bean
-    public Step relayStep3(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager){
-        return new StepBuilder("relayStep3", jobRepository)
-                .<Integer, List<Integer>>chunk(10, platformTransactionManager)
-                .reader(new ListItemReader<>(Arrays.asList(13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26)))
-                .writer(items->{
-                    System.out.println(items.getItems());
-                })
-                .allowStartIfComplete(true)
-                .build();
-    }
-
-    @Bean
-    public Step relayStep4(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager){
-        return new StepBuilder("relayStep4", jobRepository)
-                .<Integer, List<Integer>>chunk(10, platformTransactionManager)
+    public Step relayChunkStep1(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager){
+        return new StepBuilder("relayChunkStep1", jobRepository)
+                .<Integer, Integer>chunk(10, platformTransactionManager)
                 .reader(customItemReaderForRelay)
                 .writer(customItemWriterForRelay)
                 .allowStartIfComplete(true)
                 .build();
     }
+
+    public Step relayChunkStep2(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager){
+        return new StepBuilder("relayChunkStep2", jobRepository)
+                .<Integer, Integer>chunk(10, platformTransactionManager)
+                .reader(customItemReaderForRelay)
+                .writer(compositeItemWriter())
+                .allowStartIfComplete(true)
+                .build();
+    }
+
+    public CompositeItemWriter<Integer> compositeItemWriter(){
+        CompositeItemWriter<Integer> compositeItemWriter = new CompositeItemWriter<>();
+        compositeItemWriter.setDelegates(Arrays.asList(customItemWriterForRelay, customItemWriterForRelay1, customItemWriterForRelay2));
+        return compositeItemWriter;
+    }
+
 }

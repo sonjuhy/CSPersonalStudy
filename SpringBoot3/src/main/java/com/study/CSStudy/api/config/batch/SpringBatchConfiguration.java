@@ -1,8 +1,8 @@
 package com.study.CSStudy.api.config.batch;
 
-import com.study.CSStudy.api.component.CustomItemReader;
-import com.study.CSStudy.api.component.CustomItemWriter;
-import com.study.CSStudy.api.component.FirstTasklet;
+import com.study.CSStudy.api.component.batchComponent.CustomItemReader;
+import com.study.CSStudy.api.component.batchComponent.CustomItemWriter;
+import com.study.CSStudy.api.component.batchComponent.FirstTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
@@ -15,7 +15,6 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.*;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
