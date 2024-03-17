@@ -1,4 +1,4 @@
-package com.study.CSStudy.api.component;
+package com.study.CSStudy.api.component.batchComponent;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

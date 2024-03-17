@@ -1,4 +1,4 @@
-package com.study.CSStudy.api.component;
+package com.study.CSStudy.api.component.batchComponent;
 
 import org.springframework.batch.core.JobInterruptedException;
 import org.springframework.batch.core.Step;
