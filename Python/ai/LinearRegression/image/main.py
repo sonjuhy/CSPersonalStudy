@@ -1,10 +1,7 @@
-import os.path
-
-import LinearRegression as lr
-import ImagePillow as ip
-import pandas as pd
 import matplotlib.pyplot as plt
 
+import ImagePillow as ip
+import LinearRegression as lr
 
 plt.style.use('_mpl-gallery')
 
